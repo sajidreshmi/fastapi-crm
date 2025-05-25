@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary  # If you plan to use PostgreSQL, otherwise remove or use appropriate driver
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+email-validator # For EmailStr validation
