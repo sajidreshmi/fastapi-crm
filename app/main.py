@@ -11,7 +11,11 @@ from . import models # Import models to ensure tables are created
 # This should ideally be handled by migrations (e.g. Alembic) in a production app
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title="CRM API",
+    description="A simple CRM API with customer and user management.",
+    version="0.1.0",
+)
 
 # Logging Configuration (basic)
 logging.basicConfig(level=logging.INFO)
@@ -20,6 +24,7 @@ logger = logging.getLogger(__name__)
 # Custom Exception Handler for Validation Errors
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handles FastAPI request validation errors, returning a 422 response."""
     logger.error(f"Validation error: {exc.errors()} for request: {request.url}")
     return JSONResponse(
         status_code=422,
@@ -29,6 +34,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # Generic Exception Handler
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
+    """Handles any other unhandled exceptions, returning a 500 response."""
     logger.error(f"Unhandled exception: {exc} for request: {request.url}")
     return JSONResponse(
         status_code=500,
@@ -38,8 +44,9 @@ async def generic_exception_handler(request: Request, exc: Exception):
 app.include_router(customers.router)
 app.include_router(auth.router) # Include the auth router
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 async def root():
+    """Root endpoint for the API."""
     return {"message": "Welcome to the CRM API"}
 
 # To run this app, navigate to the py-fastapi-web directory and run:

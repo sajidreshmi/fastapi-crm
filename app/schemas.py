@@ -4,6 +4,7 @@ from datetime import datetime
 
 # Base schema for Customer
 class CustomerBase(BaseModel):
+    """Base Pydantic model for customer data."""
     first_name: str
     last_name: str
     email: EmailStr
@@ -12,6 +13,7 @@ class CustomerBase(BaseModel):
 
 # Schema for creating a customer
 class CustomerCreate(CustomerBase):
+    """Pydantic model for creating a new customer."""
     pass
 
 # Schema for updating a customer (all fields optional)
@@ -24,6 +26,7 @@ class CustomerUpdate(BaseModel):
 
 # Schema for reading/returning a customer (includes id and timestamps)
 class Customer(CustomerBase):
+    """Pydantic model for representing a customer, including ID and active status."""
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
@@ -33,14 +36,17 @@ class Customer(CustomerBase):
 
 # You can add other schemas here
 
-# New Schemas for User and Token
+# Schemas for User and Token
 class UserBase(BaseModel):
+    """Base Pydantic model for user data."""
     username: str
 
 class UserCreate(UserBase):
+    """Pydantic model for creating a new user, including password."""
     password: str
 
 class User(UserBase):
+    """Pydantic model for representing a user, including ID and active status."""
     id: int
     is_active: bool
 
@@ -48,8 +54,10 @@ class User(UserBase):
         orm_mode = True
 
 class Token(BaseModel):
+    """Pydantic model for the access token response."""
     access_token: str
     token_type: str
 
 class TokenData(BaseModel):
+    """Pydantic model for data encoded in the JWT token (username)."""
     username: Optional[str] = None

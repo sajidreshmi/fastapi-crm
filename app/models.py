@@ -5,6 +5,7 @@ from .database import Base
 
 
 class Customer(Base):
+    """SQLAlchemy model for a customer."""
     __tablename__ = "customers"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -16,6 +17,7 @@ class Customer(Base):
 
 
 class User(Base):
+    """SQLAlchemy model for a user."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)

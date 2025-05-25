@@ -7,7 +7,7 @@ from app.database import SessionLocal
 
 router = APIRouter(
     prefix="/customers",
-    tags=["customers"],
+    tags=["Customers"],
     # dependencies=[Depends(auth.get_current_active_user)], # Apply to all routes in this router
 )
 
@@ -21,6 +21,7 @@ def get_db():
 
 @router.post("/", response_model=schemas.Customer)
 def create_customer_endpoint(customer: schemas.CustomerCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Creates a new customer. Requires authentication."""
     db_customer = crud.get_customer_by_email(db, email=customer.email)
     if db_customer:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -28,11 +29,13 @@ def create_customer_endpoint(customer: schemas.CustomerCreate, db: Session = Dep
 
 @router.get("/", response_model=List[schemas.Customer])
 def read_customers_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Retrieves a list of customers. Requires authentication."""
     customers = crud.get_customers(db, skip=skip, limit=limit)
     return customers
 
 @router.get("/{customer_id}", response_model=schemas.Customer)
 def read_customer_endpoint(customer_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Retrieves a specific customer by ID. Requires authentication."""
     db_customer = crud.get_customer(db, customer_id=customer_id)
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -40,6 +43,7 @@ def read_customer_endpoint(customer_id: int, db: Session = Depends(get_db), curr
 
 @router.put("/{customer_id}", response_model=schemas.Customer)
 def update_customer_endpoint(customer_id: int, customer: schemas.CustomerCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Updates an existing customer. Requires authentication."""
     db_customer = crud.get_customer(db, customer_id=customer_id)
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
@@ -47,6 +51,7 @@ def update_customer_endpoint(customer_id: int, customer: schemas.CustomerCreate,
 
 @router.delete("/{customer_id}", response_model=schemas.Customer)
 def delete_customer_endpoint(customer_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Deletes a customer. Requires authentication."""
     db_customer = crud.get_customer(db, customer_id=customer_id)
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
