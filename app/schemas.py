@@ -1,16 +1,30 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
+from enum import Enum, IntEnum
+
+class Priority(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+
+class PriorityInt(IntEnum):
+    low = 1
+    medium = 2
+    high = 3
+
+
 
 # Base schema for Customer
 class CustomerBase(BaseModel):
     """Base Pydantic model for customer data."""
-    first_name: str
-    last_name: str
-    email: EmailStr
-    phone_number: Optional[str] = None
-    company_name: Optional[str] = None
-
+    first_name: str = Field(..., min_length=1, max_length=15, description="First name of the customer")
+    last_name: str = Field(..., min_length=1, max_length=15, description="Last name of the customer")
+    email: EmailStr = Field(..., description="Email address of the customer")
+    phone_number: Optional[str] = Field(None, min_length=10, max_length=15, description="Phone number of the customer")
+    company_name: Optional[str] = Field(None, min_length=1, max_length=50, description="Company name of the customer")
+    is_active: bool = Field(default=True, description="Active status of the customer")
+    
 # Schema for creating a customer
 class CustomerCreate(CustomerBase):
     """Pydantic model for creating a new customer."""

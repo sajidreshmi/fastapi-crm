@@ -48,6 +48,5 @@ app.include_router(auth.router) # Include the auth router
 async def root():
     """Root endpoint for the API."""
     return {"message": "Welcome to the CRM API"}
-
 # To run this app, navigate to the py-fastapi-web directory and run:
 # uvicorn app.main:app --reload

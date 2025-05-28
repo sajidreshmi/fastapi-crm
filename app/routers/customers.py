@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+from enum import Enum
 
 from app import crud, models, schemas, auth # Import auth
 from app.database import SessionLocal
@@ -19,6 +20,13 @@ def get_db():
     finally:
         db.close()
 
+
+@router.get("/", response_model=List[schemas.Customer])
+def read_customers_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Retrieves a list of customers. Requires authentication."""
+    customers = crud.get_customers(db, skip=skip, limit=limit)
+    return customers
+
 @router.post("/", response_model=schemas.Customer)
 def create_customer_endpoint(customer: schemas.CustomerCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
     """Creates a new customer. Requires authentication."""
@@ -27,11 +35,6 @@ def create_customer_endpoint(customer: schemas.CustomerCreate, db: Session = Dep
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_customer(db=db, customer=customer)
 
-@router.get("/", response_model=List[schemas.Customer])
-def read_customers_endpoint(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
-    """Retrieves a list of customers. Requires authentication."""
-    customers = crud.get_customers(db, skip=skip, limit=limit)
-    return customers
 
 @router.get("/{customer_id}", response_model=schemas.Customer)
 def read_customer_endpoint(customer_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):

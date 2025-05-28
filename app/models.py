@@ -1,6 +1,6 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime # Add DateTime
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func # Import func for server_default
 from .database import Base
 
 
@@ -14,7 +14,9 @@ class Customer(Base):
     email = Column(String, unique=True, index=True)
     phone_number = Column(String, index=True, nullable=True)
     is_active = Column(Boolean, default=True)
-
+    company_name = Column(String, index=True, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 class User(Base):
     """SQLAlchemy model for a user."""

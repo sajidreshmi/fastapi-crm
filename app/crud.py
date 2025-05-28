@@ -24,7 +24,7 @@ def get_customers(db: Session, skip: int = 0, limit: int = 100):
 def create_customer(db: Session, customer: schemas.CustomerCreate):
     """Creates a new customer in the database."""
     logger.info(f"Creating customer with email: {customer.email}")
-    db_customer = models.Customer(**customer.dict()) # Use model_dump() for Pydantic v2
+    db_customer = models.Customer(**customer.model_dump()) # Use model_dump() for Pydantic v2
     db.add(db_customer)
     db.commit()
     db.refresh(db_customer)
@@ -34,7 +34,7 @@ def update_customer(db: Session, customer_id: int, customer_update: schemas.Cust
     """Updates an existing customer in the database."""
     db_customer = get_customer(db, customer_id)
     if db_customer:
-        update_data = customer_update.dict(exclude_unset=True) # Use model_dump() for Pydantic v2
+        update_data = customer_update.model_dump(exclude_unset=True) # Use model_dump() for Pydantic v2
         for key, value in update_data.items():
             setattr(db_customer, key, value)
         db.commit()
