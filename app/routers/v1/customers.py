@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from enum import Enum
 
-from app import crud, models, schemas, auth # Import auth
+from app import crud, models, schemas, auth  # Import auth
 from app.database import SessionLocal
 
 router = APIRouter(
@@ -13,6 +13,8 @@ router = APIRouter(
 )
 
 # Dependency
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -26,6 +28,7 @@ def read_customers_endpoint(skip: int = 0, limit: int = 100, db: Session = Depen
     """Retrieves a list of customers. Requires authentication."""
     customers = crud.get_customers(db, skip=skip, limit=limit)
     return customers
+
 
 @router.post("/", response_model=schemas.Customer)
 def create_customer_endpoint(customer: schemas.CustomerCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
@@ -44,6 +47,7 @@ def read_customer_endpoint(customer_id: int, db: Session = Depends(get_db), curr
         raise HTTPException(status_code=404, detail="Customer not found")
     return db_customer
 
+
 @router.put("/{customer_id}", response_model=schemas.Customer)
 def update_customer_endpoint(customer_id: int, customer: schemas.CustomerCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):
     """Updates an existing customer. Requires authentication."""
@@ -51,6 +55,7 @@ def update_customer_endpoint(customer_id: int, customer: schemas.CustomerCreate,
     if db_customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
     return crud.update_customer(db=db, customer_id=customer_id, customer_update=customer)
+
 
 @router.delete("/{customer_id}", response_model=schemas.Customer)
 def delete_customer_endpoint(customer_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_active_user)):

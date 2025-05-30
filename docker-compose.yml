@@ -12,13 +12,19 @@ services:
             # - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
             - REDIS_URL=redis://redis:6379/0
         depends_on:
-            - redis
+            redis:
+                condition: service_healthy
             # - db # Uncomment if you add a database service
 
     redis:
         image: "redis:alpine"
         ports:
             - "6379:6379"
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 1s
+            timeout: 3s
+            retries: 5
 
     # db: # Uncomment and configure if you need a PostgreSQL database
     #   image: postgres:13-alpine

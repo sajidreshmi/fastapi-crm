@@ -12,3 +12,4 @@ fastapi-limiter
 redis
 aioredis
 safety
+fastapi-limiter

@@ -3,10 +3,12 @@ from typing import Optional, List
 from datetime import datetime
 from enum import Enum, IntEnum
 
+
 class Priority(str, Enum):
     low = "low"
     medium = "medium"
     high = "high"
+
 
 class PriorityInt(IntEnum):
     low = 1
@@ -14,23 +16,32 @@ class PriorityInt(IntEnum):
     high = 3
 
 
-
 # Base schema for Customer
 class CustomerBase(BaseModel):
     """Base Pydantic model for customer data."""
-    first_name: str = Field(..., min_length=1, max_length=15, description="First name of the customer")
-    last_name: str = Field(..., min_length=1, max_length=15, description="Last name of the customer")
+    first_name: str = Field(..., min_length=1, max_length=15,
+                            description="First name of the customer")
+    last_name: str = Field(..., min_length=1, max_length=15,
+                           description="Last name of the customer")
     email: EmailStr = Field(..., description="Email address of the customer")
-    phone_number: Optional[str] = Field(None, min_length=10, max_length=15, pattern=r"^\+?[1-9]\d{9,14}$", description="Phone number of the customer") # E.164 format or similar
-    company_name: Optional[str] = Field(None, min_length=1, max_length=50, description="Company name of the customer")
-    is_active: bool = Field(default=True, description="Active status of the customer")
-    
+    phone_number: Optional[str] = Field(None, min_length=10, max_length=15,
+                                        # E.164 format or similar
+                                        pattern=r"^\+?[1-9]\d{9,14}$", description="Phone number of the customer")
+    company_name: Optional[str] = Field(
+        None, min_length=1, max_length=50, description="Company name of the customer")
+    is_active: bool = Field(
+        default=True, description="Active status of the customer")
+
 # Schema for creating a customer
+
+
 class CustomerCreate(CustomerBase):
     """Pydantic model for creating a new customer."""
     pass
 
 # Schema for updating a customer (all fields optional)
+
+
 class CustomerUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -39,6 +50,8 @@ class CustomerUpdate(BaseModel):
     company_name: Optional[str] = None
 
 # Schema for reading/returning a customer (includes id and timestamps)
+
+
 class Customer(CustomerBase):
     """Pydantic model for representing a customer, including ID and active status."""
     id: int
@@ -46,18 +59,24 @@ class Customer(CustomerBase):
     updated_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True # Changed from from_attributes = True for Pydantic v1 compatibility if needed, orm_mode for v2+
+        orm_mode = True  # Changed from from_attributes = True for Pydantic v1 compatibility if needed, orm_mode for v2+
 
 # You can add other schemas here
 
 # Schemas for User and Token
+
+
 class UserBase(BaseModel):
     """Base Pydantic model for user data."""
-    username: str = Field(..., min_length=3, max_length=20, pattern=r"^[a-zA-Z0-9_]+$", description="Username of the user")
+    username: str = Field(..., min_length=3, max_length=20,
+                          pattern=r"^[a-zA-Z0-9_]+$", description="Username of the user")
+
 
 class UserCreate(UserBase):
     """Pydantic model for creating a new user, including password."""
-    password: str = Field(..., min_length=8, max_length=50, description="Password of the user")
+    password: str = Field(..., min_length=8, max_length=50,
+                          description="Password of the user")
+
 
 class User(UserBase):
     """Pydantic model for representing a user, including ID and active status."""
@@ -67,10 +86,12 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
+
 class Token(BaseModel):
     """Pydantic model for the access token response."""
     access_token: str
     token_type: str
+
 
 class TokenData(BaseModel):
     """Pydantic model for data encoded in the JWT token (username)."""

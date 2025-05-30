@@ -8,6 +8,7 @@ from app.core.redis_config import get_redis_client
 
 router = APIRouter()
 
+
 @router.get("/health", status_code=status.HTTP_200_OK)
 async def health_check(
     db: AsyncSession = Depends(get_db),
