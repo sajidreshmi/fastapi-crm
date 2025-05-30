@@ -1,12 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os # Import os
-from dotenv import load_dotenv # Import load_dotenv
+from .config import settings
 
-load_dotenv() # Load variables from .env file
-
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db") # Get from env, with a default
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 # For PostgreSQL, it would be something like:
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 

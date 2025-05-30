@@ -7,3 +7,8 @@ python-jose[cryptography]
 passlib[bcrypt]
 email-validator # For EmailStr validation
 python-multipart
+pydantic-settings
+fastapi-limiter
+redis
+aioredis
+safety

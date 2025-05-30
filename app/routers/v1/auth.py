@@ -3,6 +3,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm # For form data login
 from sqlalchemy.orm import Session
+from fastapi_limiter.depends import RateLimiter
 
 from app import crud, schemas, auth, models # Ensure models is imported if needed for type hinting
 from app.database import SessionLocal
@@ -16,7 +17,8 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/token", response_model=schemas.Token, tags=["Authentication"])
+@router.post("/token", response_model=schemas.Token, tags=["Authentication"],
+             dependencies=[Depends(RateLimiter(times=5, seconds=60))]) # Apply rate limit: 5 requests per 60 seconds
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """
     Authenticates a user and returns an access token.

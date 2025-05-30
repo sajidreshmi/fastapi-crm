@@ -21,7 +21,7 @@ class CustomerBase(BaseModel):
     first_name: str = Field(..., min_length=1, max_length=15, description="First name of the customer")
     last_name: str = Field(..., min_length=1, max_length=15, description="Last name of the customer")
     email: EmailStr = Field(..., description="Email address of the customer")
-    phone_number: Optional[str] = Field(None, min_length=10, max_length=15, description="Phone number of the customer")
+    phone_number: Optional[str] = Field(None, min_length=10, max_length=15, pattern=r"^\+?[1-9]\d{9,14}$", description="Phone number of the customer") # E.164 format or similar
     company_name: Optional[str] = Field(None, min_length=1, max_length=50, description="Company name of the customer")
     is_active: bool = Field(default=True, description="Active status of the customer")
     
@@ -53,11 +53,11 @@ class Customer(CustomerBase):
 # Schemas for User and Token
 class UserBase(BaseModel):
     """Base Pydantic model for user data."""
-    username: str
+    username: str = Field(..., min_length=3, max_length=20, pattern=r"^[a-zA-Z0-9_]+$", description="Username of the user")
 
 class UserCreate(UserBase):
     """Pydantic model for creating a new user, including password."""
-    password: str
+    password: str = Field(..., min_length=8, max_length=50, description="Password of the user")
 
 class User(UserBase):
     """Pydantic model for representing a user, including ID and active status."""

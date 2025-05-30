@@ -2,10 +2,14 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import logging
+import redis.asyncio as redis
+from fastapi_limiter import FastAPILimiter
 
 from .database import engine, Base # Ensure Base is imported
-from .routers import customers, auth # Import the new auth router
+from .routers.v1 import customers, auth, health # Import the new auth router
 from . import models # Import models to ensure tables are created
+from .config import settings
+from .core.redis_config import get_redis_client # Import get_redis_client
 
 # Create database tables if they don't exist
 # This should ideally be handled by migrations (e.g. Alembic) in a production app
@@ -20,6 +24,12 @@ app = FastAPI(
 # Logging Configuration (basic)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# @app.on_event("startup")
+# async def startup():
+    # Initialize Redis client using the centralized function
+    # redis_client = await get_redis_client()
+    # await FastAPILimiter.init(redis_client)
 
 # Custom Exception Handler for Validation Errors
 @app.exception_handler(RequestValidationError)
@@ -41,8 +51,9 @@ async def generic_exception_handler(request: Request, exc: Exception):
         content={"detail": "An internal server error occurred."},
     )
 
+app.include_router(auth.router)
 app.include_router(customers.router)
-app.include_router(auth.router) # Include the auth router
+app.include_router(health.router)
 
 @app.get("/", tags=["Root"])
 async def root():
